@@ -7,6 +7,10 @@ on:
     tags:
       - '*.*.*'
 
+# permissions block to grant the workflow write access to create a release
+permissions:
+  contents: write
+
 jobs:
   build-and-release:
     # Use a Windows runner for creating the Windows executable
@@ -31,9 +35,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install .[build,dev]
 
-      # --- NEW STEP: RUN TESTS ---
       # Step 4: Run tests with pytest
-      # If this step fails, the workflow will stop here, and no release will be created.
       - name: Run tests
         run: pytest
 
