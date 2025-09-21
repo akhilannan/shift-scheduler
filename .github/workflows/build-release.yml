@@ -51,7 +51,7 @@ jobs:
       - name: Package release assets
         run: |
           Compress-Archive -Path dist/ShiftScheduler.exe -DestinationPath ShiftScheduler-${{ steps.get_version.outputs.VERSION }}-windows.zip
-          Compress-Archive -Path src/, docs/, assets/, pyproject.toml, README.md -DestinationPath source-code-${{ steps.get_version.outputs.VERSION }}.zip
+          Compress-Archive -Path src/, assets/, pyproject.toml, README.md -DestinationPath source-code-${{ steps.get_version.outputs.VERSION }}.zip
           
       # Step 8: Create a GitHub Release and upload the ZIP files
       - name: Create GitHub Release
