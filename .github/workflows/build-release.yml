@@ -42,7 +42,7 @@ jobs:
       # Step 5: Build the executable using PyInstaller
       - name: Build executable
         run: |
-          pyinstaller --onefile --windowed --name ShiftScheduler --icon=assets/icon.ico src/shift_scheduler/main.py
+          pyinstaller --onefile --windowed --name ShiftScheduler --icon=assets/icon.ico --collect-binaries ortools src/shift_scheduler/main.py
 
       # Step 6: Get the version number from the tag
       - name: Get version from tag
