@@ -10,19 +10,23 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from shift_scheduler.data_manager import DataManager
 
+
 @pytest.fixture
 def data_manager():
     """Fixture for a clean, isolated DataManager instance for each test."""
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as temp_file:
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".json", delete=False
+    ) as temp_file:
         temp_path = temp_file.name
         json.dump({}, temp_file)
-    
+
     dm = DataManager(temp_path)
     # Add a standard set of employees for consistent testing
     dm.add_employee("Alice", "High")
     dm.add_employee("Bob", "Low")
     yield dm
     os.unlink(temp_path)
+
 
 def test_update_employee_name_updates_quotas(data_manager):
     """
@@ -49,6 +53,7 @@ def test_update_employee_name_updates_quotas(data_manager):
     assert old_name not in new_quotas_31
     assert new_name in new_quotas_31
 
+
 def test_update_employee_experience_recalculates_quotas(data_manager):
     """
     Why this is important: An employee's experience level is a core business
@@ -58,7 +63,7 @@ def test_update_employee_experience_recalculates_quotas(data_manager):
     """
     bob = data_manager.get_employee_by_name("Bob")
     assert bob.experience == "Low"
-    
+
     # Check initial quota for a 31-day month (Low experience)
     assert data_manager.get_quotas_for_month(31)["Bob"] == 21
 
@@ -68,6 +73,7 @@ def test_update_employee_experience_recalculates_quotas(data_manager):
     # Verify quota was automatically updated
     assert data_manager.get_quotas_for_month(31)["Bob"] == 24
 
+
 def test_delete_employee_removes_all_data(data_manager):
     """
     Why this is important: When an employee is deleted, all their associated
@@ -75,18 +81,19 @@ def test_delete_employee_removes_all_data(data_manager):
     errors where the application tries to reference a non-existent user.
     """
     bob = data_manager.get_employee_by_name("Bob")
-    
+
     # Ensure Bob exists in quotas
     assert "Bob" in data_manager.get_quotas_for_month(31)
 
     # Delete Bob
     data_manager.delete_employee(bob.id)
     data_manager.save_data()
-    
+
     # Reload and verify deletion
     reloaded_dm = DataManager(data_manager.data_file)
     assert reloaded_dm.get_employee_by_id(bob.id) is None
     assert "Bob" not in reloaded_dm.get_quotas_for_month(31)
+
 
 def test_data_migration_offdays_to_offshifts(tmp_path):
     """
@@ -95,28 +102,28 @@ def test_data_migration_offdays_to_offshifts(tmp_path):
     for users upgrading from an older version that used a different data format.
     """
     old_data_file = tmp_path / "old_data.json"
-    
+
     # Manually create a data file using the old "offDays" format
     old_data_content = {
-        "employees": [{
-            "id": 1,
-            "name": "OldUser",
-            "isActive": True,
-            "experience": "High",
-            "preferences": {
-                "offDays": ["2025-01-10"]
+        "employees": [
+            {
+                "id": 1,
+                "name": "OldUser",
+                "isActive": True,
+                "experience": "High",
+                "preferences": {"offDays": ["2025-01-10"]},
             }
-        }]
+        ]
     }
     old_data_file.write_text(json.dumps(old_data_content))
-    
+
     # Initialize DataManager with the old file format
     dm = DataManager(str(old_data_file))
-    
+
     # Verify that the old data was correctly migrated to the new format
     migrated_user = dm.get_employee_by_name("OldUser")
     prefs = migrated_user.preferences
-    
+
     # The single "offDay" should have been converted to two "off_shifts"
     expected_off_shifts = {("2025-01-10", "day"), ("2025-01-10", "night")}
     assert set(prefs.off_shifts) == expected_off_shifts

@@ -28,7 +28,9 @@ ctk.set_default_color_theme("blue")
 class ClearScheduleDialog(ctk.CTkToplevel):
     """Dialog for confirming future schedule clearing"""
 
-    def __init__(self, parent, month_key: str, clear_info: Dict, callback: Callable = None):
+    def __init__(
+        self, parent, month_key: str, clear_info: Dict, callback: Callable = None
+    ):
         super().__init__(parent)
         self.month_key = month_key
         self.clear_info = clear_info
@@ -57,7 +59,7 @@ class ClearScheduleDialog(ctk.CTkToplevel):
         title_label = ctk.CTkLabel(
             main_frame,
             text="🗑️ Clear Future Schedules",
-            font=ctk.CTkFont(size=16, weight="bold")
+            font=ctk.CTkFont(size=16, weight="bold"),
         )
         title_label.pack(pady=(0, 10))
 
@@ -66,16 +68,16 @@ class ClearScheduleDialog(ctk.CTkToplevel):
         month_frame.pack(fill="x", pady=(0, 10))
 
         ctk.CTkLabel(
-            month_frame,
-            text="Target Month:",
-            font=ctk.CTkFont(weight="bold")
+            month_frame, text="Target Month:", font=ctk.CTkFont(weight="bold")
         ).pack(anchor="w", padx=10, pady=5)
 
-        year, month = map(int, self.month_key.split('-'))
+        year, month = map(int, self.month_key.split("-"))
         month_name = calendar.month_name[month]
         month_text = f"{month_name} {year}"
 
-        ctk.CTkLabel(month_frame, text=month_text, justify="left").pack(anchor="w", padx=20, pady=5)
+        ctk.CTkLabel(month_frame, text=month_text, justify="left").pack(
+            anchor="w", padx=20, pady=5
+        )
 
         # Clear information
         info_frame = ctk.CTkFrame(main_frame)
@@ -84,7 +86,7 @@ class ClearScheduleDialog(ctk.CTkToplevel):
         ctk.CTkLabel(
             info_frame,
             text="Assignments to be Cleared:",
-            font=ctk.CTkFont(weight="bold")
+            font=ctk.CTkFont(weight="bold"),
         ).pack(anchor="w", padx=10, pady=5)
 
         cleared_count = self.clear_info.get("cleared_count", 0)
@@ -102,7 +104,9 @@ class ClearScheduleDialog(ctk.CTkToplevel):
             if len(affected_dates) > 5:
                 info_text += f"\n  ... and {len(affected_dates) - 5} more"
 
-        ctk.CTkLabel(info_frame, text=info_text, justify="left").pack(anchor="w", padx=20, pady=5)
+        ctk.CTkLabel(info_frame, text=info_text, justify="left").pack(
+            anchor="w", padx=20, pady=5
+        )
 
         # Warning
         warning_frame = ctk.CTkFrame(main_frame, fg_color="orange")
@@ -111,7 +115,7 @@ class ClearScheduleDialog(ctk.CTkToplevel):
         ctk.CTkLabel(
             warning_frame,
             text="⚠️ Warning: This action cannot be undone. Future schedule assignments will be permanently cleared.",
-            font=ctk.CTkFont(size=10)
+            font=ctk.CTkFont(size=10),
         ).pack(pady=5)
 
         # Buttons
@@ -119,11 +123,7 @@ class ClearScheduleDialog(ctk.CTkToplevel):
         button_frame.pack(fill="x", pady=(10, 0))
 
         ctk.CTkButton(
-            button_frame,
-            text="Cancel",
-            command=self._cancel,
-            width=100,
-            fg_color="red"
+            button_frame, text="Cancel", command=self._cancel, width=100, fg_color="red"
         ).pack(side="right", padx=(10, 0))
 
         ctk.CTkButton(
@@ -131,7 +131,7 @@ class ClearScheduleDialog(ctk.CTkToplevel):
             text="Clear Future Schedules",
             command=self._confirm_clear,
             width=180,
-            fg_color="orange"
+            fg_color="orange",
         ).pack(side="right")
 
     def _confirm_clear(self):
@@ -150,7 +150,9 @@ class ClearScheduleDialog(ctk.CTkToplevel):
 class EmployeeDialog(ctk.CTkToplevel):
     """Dialog for adding/editing employees"""
 
-    def __init__(self, parent, employee: Optional[Employee] = None, callback: Callable = None):
+    def __init__(
+        self, parent, employee: Optional[Employee] = None, callback: Callable = None
+    ):
         super().__init__(parent)
         self.employee = employee
         self.callback = callback
@@ -169,78 +171,67 @@ class EmployeeDialog(ctk.CTkToplevel):
         x = parent.winfo_x() + (parent.winfo_width() // 2) - (self.winfo_width() // 2)
         y = parent.winfo_y() + (parent.winfo_height() // 2) - (self.winfo_height() // 2)
         self.geometry(f"+{x}+{y}")
-    
+
     def _create_widgets(self):
         # Main frame
         main_frame = ctk.CTkFrame(self)
         main_frame.pack(fill="both", expand=True, padx=20, pady=20)
-        
+
         # Name field
         ctk.CTkLabel(main_frame, text="Name:").pack(anchor="w", pady=(0, 5))
         self.name_entry = ctk.CTkEntry(main_frame, width=300)
         self.name_entry.pack(pady=(0, 15))
-        
+
         # Experience field
         ctk.CTkLabel(main_frame, text="Experience Level:").pack(anchor="w", pady=(0, 5))
         self.experience_var = ctk.StringVar(value="Low")
         self.experience_menu = ctk.CTkOptionMenu(
-            main_frame, 
-            values=["High", "Low"],
-            variable=self.experience_var,
-            width=300
+            main_frame, values=["High", "Low"], variable=self.experience_var, width=300
         )
         self.experience_menu.pack(pady=(0, 15))
-        
+
         # Active status
         self.active_var = ctk.BooleanVar(value=True)
         self.active_checkbox = ctk.CTkCheckBox(
-            main_frame, 
-            text="Active Employee",
-            variable=self.active_var
+            main_frame, text="Active Employee", variable=self.active_var
         )
         self.active_checkbox.pack(pady=(0, 20))
-        
+
         # Buttons
         button_frame = ctk.CTkFrame(main_frame)
         button_frame.pack(fill="x", pady=(10, 0))
-        
+
         ctk.CTkButton(
-            button_frame, 
-            text="Cancel",
-            command=self._cancel,
-            width=100
+            button_frame, text="Cancel", command=self._cancel, width=100
         ).pack(side="right", padx=(10, 0))
-        
-        ctk.CTkButton(
-            button_frame, 
-            text="Save",
-            command=self._save,
-            width=100
-        ).pack(side="right")
-    
+
+        ctk.CTkButton(button_frame, text="Save", command=self._save, width=100).pack(
+            side="right"
+        )
+
     def _populate_fields(self):
         if self.employee:
             self.name_entry.insert(0, self.employee.name)
             self.experience_var.set(self.employee.experience)
             self.active_var.set(self.employee.is_active)
-    
+
     def _save(self):
         name = self.name_entry.get().strip()
         if not name:
             messagebox.showerror("Error", "Name is required")
             return
-        
+
         self.result = {
             "name": name,
             "experience": self.experience_var.get(),
-            "is_active": self.active_var.get()
+            "is_active": self.active_var.get(),
         }
-        
+
         if self.callback:
             self.callback(self.result)
-        
+
         self.destroy()
-    
+
     def _cancel(self):
         self.destroy()
 
@@ -248,7 +239,13 @@ class EmployeeDialog(ctk.CTkToplevel):
 class CalendarCell(ctk.CTkFrame):
     """Individual calendar cell with dropdowns for manual assignment"""
 
-    def __init__(self, parent, date_obj: date, data_manager: DataManager, on_manual_assign: Callable):
+    def __init__(
+        self,
+        parent,
+        date_obj: date,
+        data_manager: DataManager,
+        on_manual_assign: Callable,
+    ):
         super().__init__(parent, corner_radius=5)
         self.date_obj = date_obj
         self.data_manager = data_manager
@@ -261,15 +258,18 @@ class CalendarCell(ctk.CTkFrame):
     def _create_widgets(self):
         # Date label
         self.date_label = ctk.CTkLabel(
-            self,
-            text=str(self.date_obj.day),
-            font=ctk.CTkFont(weight="bold")
+            self, text=str(self.date_obj.day), font=ctk.CTkFont(weight="bold")
         )
         self.date_label.pack(pady=(5, 0))
 
         # Employee list for dropdowns
-        self.employee_names = [emp.name for emp in self.data_manager.get_employees(active_only=True)]
-        self.employee_map = {emp.name: emp.id for emp in self.data_manager.get_employees(active_only=True)}
+        self.employee_names = [
+            emp.name for emp in self.data_manager.get_employees(active_only=True)
+        ]
+        self.employee_map = {
+            emp.name: emp.id
+            for emp in self.data_manager.get_employees(active_only=True)
+        }
         self.options = ["Unassigned"] + self.employee_names
 
         # Day shift dropdown
@@ -278,7 +278,9 @@ class CalendarCell(ctk.CTkFrame):
             self,
             variable=self.day_var,
             values=self.options,
-            command=lambda choice: self._on_shift_assignment_change("day_shift", choice)
+            command=lambda choice: self._on_shift_assignment_change(
+                "day_shift", choice
+            ),
         )
         self.day_menu.pack(fill="x", padx=5, pady=2)
 
@@ -288,7 +290,9 @@ class CalendarCell(ctk.CTkFrame):
             self,
             variable=self.night_var,
             values=self.options,
-            command=lambda choice: self._on_shift_assignment_change("night_shift", choice)
+            command=lambda choice: self._on_shift_assignment_change(
+                "night_shift", choice
+            ),
         )
         self.night_menu.pack(fill="x", padx=5, pady=2)
 
@@ -299,10 +303,12 @@ class CalendarCell(ctk.CTkFrame):
             # Validate off-day
             date_str = self.date_obj.strftime("%Y-%m-%d")
             shift_type_short = "day" if shift_type == "day_shift" else "night"
-            if self.data_manager.is_employee_off_shift(emp_id, date_str, shift_type_short):
+            if self.data_manager.is_employee_off_shift(
+                emp_id, date_str, shift_type_short
+            ):
                 messagebox.showerror(
                     "Assignment Error",
-                    f"Cannot assign {choice} to this shift. The employee has marked this shift as an off-day."
+                    f"Cannot assign {choice} to this shift. The employee has marked this shift as an off-day.",
                 )
                 # Revert dropdown to original value
                 self.update_assignments(self.day_shift_emp, self.night_shift_emp)
@@ -310,7 +316,9 @@ class CalendarCell(ctk.CTkFrame):
 
         self.on_manual_assign(self.date_obj, shift_type, emp_id)
 
-    def update_assignments(self, day_emp: Optional[Employee], night_emp: Optional[Employee]):
+    def update_assignments(
+        self, day_emp: Optional[Employee], night_emp: Optional[Employee]
+    ):
         """Update displayed assignments in dropdowns"""
         self.day_shift_emp = day_emp
         self.night_shift_emp = night_emp
@@ -334,7 +342,7 @@ class CalendarCell(ctk.CTkFrame):
 
 class CalendarView(ctk.CTkScrollableFrame):
     """Monthly calendar view with shift assignments"""
-    
+
     def __init__(self, parent, data_manager: DataManager, main_window):
         super().__init__(parent)
         self.data_manager = data_manager
@@ -345,24 +353,21 @@ class CalendarView(ctk.CTkScrollableFrame):
         self.schedule = {}
 
         self._create_calendar()
-    
+
     def _create_calendar(self):
         # Clear existing widgets
         for widget in self.winfo_children():
             widget.destroy()
-        
+
         self.cells = {}
-        
+
         # Calendar header
         header_frame = ctk.CTkFrame(self)
         header_frame.pack(fill="x", padx=10, pady=10)
 
         # Previous month button
         prev_button = ctk.CTkButton(
-            header_frame,
-            text="<",
-            width=30,
-            command=self._prev_month
+            header_frame, text="<", width=30, command=self._prev_month
         )
         prev_button.pack(side="left", padx=5)
 
@@ -371,36 +376,30 @@ class CalendarView(ctk.CTkScrollableFrame):
         title_label = ctk.CTkLabel(
             header_frame,
             text=f"{month_name} {self.current_year}",
-            font=ctk.CTkFont(size=20, weight="bold")
+            font=ctk.CTkFont(size=20, weight="bold"),
         )
         title_label.pack(side="left", expand=True)
 
         # Next month button
         next_button = ctk.CTkButton(
-            header_frame,
-            text=">",
-            width=30,
-            command=self._next_month
+            header_frame, text=">", width=30, command=self._next_month
         )
         next_button.pack(side="left", padx=5)
-        
+
         # Days of week header
         days_frame = ctk.CTkFrame(self)
         days_frame.pack(fill="x", padx=10, pady=(0, 10))
 
         for i, day in enumerate(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]):
             day_label = ctk.CTkLabel(
-                days_frame,
-                text=day,
-                font=ctk.CTkFont(weight="bold"),
-                justify="center"
+                days_frame, text=day, font=ctk.CTkFont(weight="bold"), justify="center"
             )
             day_label.grid(row=0, column=i, padx=2, pady=2, sticky="nsew")
 
         # Configure column weights for days_frame
         for i in range(7):
             days_frame.columnconfigure(i, weight=1)
-        
+
         # Calendar grid
         self.grid_frame = ctk.CTkFrame(self)
         self.grid_frame.pack(fill="both", expand=True, padx=10, pady=10)
@@ -413,7 +412,9 @@ class CalendarView(ctk.CTkScrollableFrame):
                 if day == 0:
                     # Empty cell for days from other months
                     empty_frame = ctk.CTkFrame(self.grid_frame, height=100)
-                    empty_frame.grid(row=week_num, column=day_num, padx=2, pady=2, sticky="nsew")
+                    empty_frame.grid(
+                        row=week_num, column=day_num, padx=2, pady=2, sticky="nsew"
+                    )
                 else:
                     # Create calendar cell
                     date_obj = date(self.current_year, self.current_month, day)
@@ -421,11 +422,13 @@ class CalendarView(ctk.CTkScrollableFrame):
                         self.grid_frame,
                         date_obj,
                         self.data_manager,
-                        self._on_manual_assign
+                        self._on_manual_assign,
                     )
-                    cell.grid(row=week_num, column=day_num, padx=2, pady=2, sticky="nsew")
+                    cell.grid(
+                        row=week_num, column=day_num, padx=2, pady=2, sticky="nsew"
+                    )
                     self.cells[date_obj] = cell
-        
+
         # Configure grid weights
         for i in range(7):
             self.grid_frame.columnconfigure(i, weight=1)
@@ -439,7 +442,9 @@ class CalendarView(ctk.CTkScrollableFrame):
 
         # If unassigning, no validation is needed
         if emp_id is None:
-            self.data_manager.set_shift_assignment(month_key, date_str, shift_type, None, is_manual=True)
+            self.data_manager.set_shift_assignment(
+                month_key, date_str, shift_type, None, is_manual=True
+            )
             self.data_manager.save_data()
             self.update_schedule_display()
             self.main_window.dashboard.update_dashboard(month_key)
@@ -447,27 +452,32 @@ class CalendarView(ctk.CTkScrollableFrame):
 
         # Get the complete current schedule for validation context
         current_schedule = self.data_manager.get_schedule(month_key)
-        
+
         # Perform comprehensive validation using the scheduler logic
         violations = self.main_window.scheduler.validate_manual_assignment(
             emp_id, date_str, shift_type, current_schedule
         )
-        
+
         if violations:
             # If validation fails, show an error and revert the UI
-            error_message = "Assignment failed due to the following violations:\n\n" + "\n".join(f"• {v}" for v in violations)
+            error_message = (
+                "Assignment failed due to the following violations:\n\n"
+                + "\n".join(f"• {v}" for v in violations)
+            )
             messagebox.showerror("Validation Error", error_message)
             self.update_schedule_display()  # Reverts dropdown change by reloading from data
             return
 
         # If valid, proceed to set the assignment
-        self.data_manager.set_shift_assignment(month_key, date_str, shift_type, emp_id, is_manual=True)
+        self.data_manager.set_shift_assignment(
+            month_key, date_str, shift_type, emp_id, is_manual=True
+        )
 
         # Save data and refresh the entire UI
         self.data_manager.save_data()
         self.update_schedule_display()
         self.main_window.dashboard.update_dashboard(month_key)
-    
+
     def set_month(self, year: int, month: int):
         """Change displayed month"""
         self.current_year = year
@@ -487,7 +497,9 @@ class CalendarView(ctk.CTkScrollableFrame):
         self.main_window.current_month = self.current_month
         self.main_window.month_var.set(str(self.current_month))
         self.main_window.year_var.set(str(self.current_year))
-        self.main_window.dashboard.update_dashboard(f"{self.current_year}-{self.current_month:02d}")
+        self.main_window.dashboard.update_dashboard(
+            f"{self.current_year}-{self.current_month:02d}"
+        )
 
     def _next_month(self):
         """Navigate to next month"""
@@ -501,8 +513,10 @@ class CalendarView(ctk.CTkScrollableFrame):
         self.main_window.current_month = self.current_month
         self.main_window.month_var.set(str(self.current_month))
         self.main_window.year_var.set(str(self.current_year))
-        self.main_window.dashboard.update_dashboard(f"{self.current_year}-{self.current_month:02d}")
-    
+        self.main_window.dashboard.update_dashboard(
+            f"{self.current_year}-{self.current_month:02d}"
+        )
+
     def update_schedule_display(self):
         """Update calendar with current schedule"""
         month_key = f"{self.current_year}-{self.current_month:02d}"
@@ -512,13 +526,25 @@ class CalendarView(ctk.CTkScrollableFrame):
             date_str = date_obj.strftime("%Y-%m-%d")
 
             # Get employee IDs using the proper method
-            day_emp_id = self.data_manager.get_shift_assignment(month_key, date_str, "day_shift")
-            night_emp_id = self.data_manager.get_shift_assignment(month_key, date_str, "night_shift")
+            day_emp_id = self.data_manager.get_shift_assignment(
+                month_key, date_str, "day_shift"
+            )
+            night_emp_id = self.data_manager.get_shift_assignment(
+                month_key, date_str, "night_shift"
+            )
 
-            logger.debug(f"DEBUG: {date_str} - day_emp_id: {day_emp_id}, night_emp_id: {night_emp_id}")
+            logger.debug(
+                f"DEBUG: {date_str} - day_emp_id: {day_emp_id}, night_emp_id: {night_emp_id}"
+            )
 
-            day_emp = self.data_manager.get_employee_by_id(day_emp_id) if day_emp_id else None
-            night_emp = self.data_manager.get_employee_by_id(night_emp_id) if night_emp_id else None
+            day_emp = (
+                self.data_manager.get_employee_by_id(day_emp_id) if day_emp_id else None
+            )
+            night_emp = (
+                self.data_manager.get_employee_by_id(night_emp_id)
+                if night_emp_id
+                else None
+            )
 
             cell.update_assignments(day_emp, night_emp)
 
@@ -526,7 +552,12 @@ class CalendarView(ctk.CTkScrollableFrame):
 class CalendarPicker(ctk.CTkFrame):
     """Calendar widget for selecting individual shifts"""
 
-    def __init__(self, parent, selected_shifts: List[Tuple[str, str]] = None, on_shift_selected=None):
+    def __init__(
+        self,
+        parent,
+        selected_shifts: List[Tuple[str, str]] = None,
+        on_shift_selected=None,
+    ):
         super().__init__(parent)
         self.selected_shifts = set(selected_shifts or [])
         self.on_shift_selected = on_shift_selected
@@ -542,25 +573,17 @@ class CalendarPicker(ctk.CTkFrame):
         header_frame.pack(fill="x", padx=10, pady=10)
 
         self.prev_button = ctk.CTkButton(
-            header_frame,
-            text="◀",
-            width=30,
-            command=self._prev_month
+            header_frame, text="◀", width=30, command=self._prev_month
         )
         self.prev_button.pack(side="left", padx=5)
 
         self.month_year_label = ctk.CTkLabel(
-            header_frame,
-            text="",
-            font=ctk.CTkFont(size=16, weight="bold")
+            header_frame, text="", font=ctk.CTkFont(size=16, weight="bold")
         )
         self.month_year_label.pack(side="left", expand=True)
 
         self.next_button = ctk.CTkButton(
-            header_frame,
-            text="▶",
-            width=30,
-            command=self._next_month
+            header_frame, text="▶", width=30, command=self._next_month
         )
         self.next_button.pack(side="left", padx=5)
 
@@ -570,10 +593,7 @@ class CalendarPicker(ctk.CTkFrame):
 
         for i, day in enumerate(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]):
             day_label = ctk.CTkLabel(
-                days_frame,
-                text=day,
-                font=ctk.CTkFont(weight="bold"),
-                justify="center"
+                days_frame, text=day, font=ctk.CTkFont(weight="bold"), justify="center"
             )
             day_label.grid(row=0, column=i, padx=2, pady=2, sticky="nsew")
 
@@ -602,18 +622,24 @@ class CalendarPicker(ctk.CTkFrame):
                 if day == 0:
                     # Empty cell
                     empty_label = ctk.CTkLabel(self.calendar_frame, text="", height=60)
-                    empty_label.grid(row=week_idx, column=day_idx, padx=2, pady=2, sticky="nsew")
+                    empty_label.grid(
+                        row=week_idx, column=day_idx, padx=2, pady=2, sticky="nsew"
+                    )
                 else:
                     # Date cell with two shift areas
                     date_str = f"{self.current_year}-{self.current_month:02d}-{day:02d}"
 
                     # Container frame for the date
                     date_frame = ctk.CTkFrame(self.calendar_frame, height=60)
-                    date_frame.grid(row=week_idx, column=day_idx, padx=2, pady=2, sticky="nsew")
+                    date_frame.grid(
+                        row=week_idx, column=day_idx, padx=2, pady=2, sticky="nsew"
+                    )
                     date_frame.pack_propagate(False)
 
                     # Date label
-                    date_label = ctk.CTkLabel(date_frame, text=str(day), font=ctk.CTkFont(weight="bold"))
+                    date_label = ctk.CTkLabel(
+                        date_frame, text=str(day), font=ctk.CTkFont(weight="bold")
+                    )
                     date_label.pack(pady=(2, 0))
 
                     # Day shift button
@@ -626,7 +652,7 @@ class CalendarPicker(ctk.CTkFrame):
                         font=ctk.CTkFont(size=10),
                         fg_color="#007BFF" if day_selected else "lightgray",
                         text_color="white" if day_selected else "black",
-                        command=lambda d=date_str: self._toggle_shift(d, "day")
+                        command=lambda d=date_str: self._toggle_shift(d, "day"),
                     )
                     day_button.pack(side="left", padx=2, pady=2)
 
@@ -640,7 +666,7 @@ class CalendarPicker(ctk.CTkFrame):
                         font=ctk.CTkFont(size=10),
                         fg_color="darkblue" if night_selected else "gray",
                         text_color="white" if night_selected else "black",
-                        command=lambda d=date_str: self._toggle_shift(d, "night")
+                        command=lambda d=date_str: self._toggle_shift(d, "night"),
                     )
                     night_button.pack(side="right", padx=2, pady=2)
 
@@ -717,9 +743,7 @@ class PreferencesGrid(ctk.CTkFrame):
     def _create_widgets(self):
         # Title
         title_label = ctk.CTkLabel(
-            self,
-            text="Employee Preferences",
-            font=ctk.CTkFont(size=16, weight="bold")
+            self, text="Employee Preferences", font=ctk.CTkFont(size=16, weight="bold")
         )
         title_label.pack(pady=(10, 20))
 
@@ -728,16 +752,16 @@ class PreferencesGrid(ctk.CTkFrame):
         off_days_frame.pack(fill="x", padx=10, pady=10)
 
         ctk.CTkLabel(
-            off_days_frame,
-            text="Off Shifts:",
-            font=ctk.CTkFont(weight="bold")
+            off_days_frame, text="Off Shifts:", font=ctk.CTkFont(weight="bold")
         ).pack(anchor="w", padx=10, pady=5)
 
         self.off_days_text = ctk.CTkTextbox(off_days_frame, height=60)
         self.off_days_text.pack(fill="x", padx=10, pady=(0, 10))
 
         # Calendar picker for off-shifts
-        self.calendar_picker = CalendarPicker(off_days_frame, on_shift_selected=self._on_off_days_changed)
+        self.calendar_picker = CalendarPicker(
+            off_days_frame, on_shift_selected=self._on_off_days_changed
+        )
         self.calendar_picker.pack(fill="x", padx=10, pady=(0, 10))
 
         # Preferred shift types
@@ -745,9 +769,7 @@ class PreferencesGrid(ctk.CTkFrame):
         shift_frame.pack(fill="x", padx=10, pady=10)
 
         ctk.CTkLabel(
-            shift_frame,
-            text="Preferred Shift Types:",
-            font=ctk.CTkFont(weight="bold")
+            shift_frame, text="Preferred Shift Types:", font=ctk.CTkFont(weight="bold")
         ).pack(anchor="w", padx=10, pady=5)
 
         self.shift_vars = {}
@@ -758,7 +780,7 @@ class PreferencesGrid(ctk.CTkFrame):
                 shift_frame,
                 text=shift.capitalize(),
                 variable=var,
-                command=self._on_shift_preference_changed
+                command=self._on_shift_preference_changed,
             )
             checkbox.pack(anchor="w", padx=20, pady=2)
             self.shift_vars[shift] = var
@@ -770,7 +792,7 @@ class PreferencesGrid(ctk.CTkFrame):
         ctk.CTkLabel(
             quota_frame,
             text="Custom Quotas (per month length):",
-            font=ctk.CTkFont(weight="bold")
+            font=ctk.CTkFont(weight="bold"),
         ).pack(anchor="w", padx=10, pady=5)
 
         self.quota_entries = {}
@@ -788,9 +810,7 @@ class PreferencesGrid(ctk.CTkFrame):
         notes_frame.pack(fill="x", padx=10, pady=10)
 
         ctk.CTkLabel(
-            notes_frame,
-            text="Availability Notes:",
-            font=ctk.CTkFont(weight="bold")
+            notes_frame, text="Availability Notes:", font=ctk.CTkFont(weight="bold")
         ).pack(anchor="w", padx=10, pady=5)
 
         self.notes_text = ctk.CTkTextbox(notes_frame, height=80)
@@ -855,7 +875,14 @@ class PreferencesGrid(ctk.CTkFrame):
 class EmployeeForm(ctk.CTkFrame):
     """Form for adding/editing employees with validation"""
 
-    def __init__(self, parent, data_manager: DataManager, employee: Employee = None, on_save=None, on_cancel=None):
+    def __init__(
+        self,
+        parent,
+        data_manager: DataManager,
+        employee: Employee = None,
+        on_save=None,
+        on_cancel=None,
+    ):
         super().__init__(parent)
         self.data_manager = data_manager
         self.employee = employee
@@ -870,9 +897,7 @@ class EmployeeForm(ctk.CTkFrame):
         # Title
         title_text = "Edit Employee" if self.employee else "Add New Employee"
         title_label = ctk.CTkLabel(
-            self,
-            text=title_text,
-            font=ctk.CTkFont(size=18, weight="bold")
+            self, text=title_text, font=ctk.CTkFont(size=18, weight="bold")
         )
         title_label.pack(pady=(20, 10))
 
@@ -884,41 +909,40 @@ class EmployeeForm(ctk.CTkFrame):
         name_frame = ctk.CTkFrame(form_frame)
         name_frame.pack(fill="x", pady=10)
 
-        ctk.CTkLabel(name_frame, text="Name:", font=ctk.CTkFont(weight="bold")).pack(anchor="w", padx=10, pady=5)
+        ctk.CTkLabel(name_frame, text="Name:", font=ctk.CTkFont(weight="bold")).pack(
+            anchor="w", padx=10, pady=5
+        )
         self.name_entry = ctk.CTkEntry(name_frame, width=300)
         self.name_entry.pack(padx=10, pady=(0, 5))
 
-        self.name_error_label = ctk.CTkLabel(name_frame, text="", text_color="red", font=ctk.CTkFont(size=10))
+        self.name_error_label = ctk.CTkLabel(
+            name_frame, text="", text_color="red", font=ctk.CTkFont(size=10)
+        )
         self.name_error_label.pack(anchor="w", padx=10)
 
         # Experience field
         exp_frame = ctk.CTkFrame(form_frame)
         exp_frame.pack(fill="x", pady=10)
 
-        ctk.CTkLabel(exp_frame, text="Experience Level:", font=ctk.CTkFont(weight="bold")).pack(anchor="w", padx=10, pady=5)
+        ctk.CTkLabel(
+            exp_frame, text="Experience Level:", font=ctk.CTkFont(weight="bold")
+        ).pack(anchor="w", padx=10, pady=5)
         self.experience_var = ctk.StringVar(value="Low")
         self.experience_menu = ctk.CTkOptionMenu(
-            exp_frame,
-            values=["High", "Low"],
-            variable=self.experience_var,
-            width=300
+            exp_frame, values=["High", "Low"], variable=self.experience_var, width=300
         )
         self.experience_menu.pack(padx=10, pady=(0, 5))
 
         # Active status
         self.active_var = ctk.BooleanVar(value=True)
         self.active_checkbox = ctk.CTkCheckBox(
-            form_frame,
-            text="Employee is Active",
-            variable=self.active_var
+            form_frame, text="Employee is Active", variable=self.active_var
         )
         self.active_checkbox.pack(anchor="w", padx=20, pady=10)
 
         # Preferences section
         prefs_title = ctk.CTkLabel(
-            form_frame,
-            text="Preferences",
-            font=ctk.CTkFont(size=14, weight="bold")
+            form_frame, text="Preferences", font=ctk.CTkFont(size=14, weight="bold")
         )
         prefs_title.pack(anchor="w", padx=10, pady=(20, 10))
 
@@ -930,19 +954,12 @@ class EmployeeForm(ctk.CTkFrame):
         button_frame.pack(fill="x", padx=20, pady=20)
 
         self.cancel_button = ctk.CTkButton(
-            button_frame,
-            text="Cancel",
-            command=self._cancel,
-            width=100
+            button_frame, text="Cancel", command=self._cancel, width=100
         )
         self.cancel_button.pack(side="right", padx=(10, 0))
 
         self.save_button = ctk.CTkButton(
-            button_frame,
-            text="Save",
-            command=self._save,
-            width=100,
-            fg_color="green"
+            button_frame, text="Save", command=self._save, width=100, fg_color="green"
         )
         self.save_button.pack(side="right")
 
@@ -964,7 +981,9 @@ class EmployeeForm(ctk.CTkFrame):
 
         # Check for duplicate names (if adding new employee or changing name)
         existing_employee = self.data_manager.get_employee_by_name(name)
-        if existing_employee and (not self.employee or existing_employee.id != self.employee.id):
+        if existing_employee and (
+            not self.employee or existing_employee.id != self.employee.id
+        ):
             return False, f"An employee with name '{name}' already exists"
 
         return True, ""
@@ -988,7 +1007,7 @@ class EmployeeForm(ctk.CTkFrame):
             "name": name,
             "experience": experience,
             "is_active": is_active,
-            "preferences": preferences
+            "preferences": preferences,
         }
 
         if self.on_save:
@@ -1002,7 +1021,13 @@ class EmployeeForm(ctk.CTkFrame):
 class EmployeeList(ctk.CTkFrame):
     """List component for displaying and managing employees"""
 
-    def __init__(self, parent, data_manager: DataManager, on_employee_selected=None, on_add_employee=None):
+    def __init__(
+        self,
+        parent,
+        data_manager: DataManager,
+        on_employee_selected=None,
+        on_add_employee=None,
+    ):
         super().__init__(parent)
         self.data_manager = data_manager
         self.on_employee_selected = on_employee_selected
@@ -1018,17 +1043,12 @@ class EmployeeList(ctk.CTkFrame):
         header_frame.pack(fill="x", padx=10, pady=10)
 
         title_label = ctk.CTkLabel(
-            header_frame,
-            text="Employees",
-            font=ctk.CTkFont(size=16, weight="bold")
+            header_frame, text="Employees", font=ctk.CTkFont(size=16, weight="bold")
         )
         title_label.pack(side="left", padx=10, pady=10)
 
         self.add_button = ctk.CTkButton(
-            header_frame,
-            text="+ Add Employee",
-            command=self._add_employee,
-            width=120
+            header_frame, text="+ Add Employee", command=self._add_employee, width=120
         )
         self.add_button.pack(side="right", padx=10, pady=10)
 
@@ -1044,7 +1064,7 @@ class EmployeeList(ctk.CTkFrame):
             values=["All", "Active", "Inactive", "High Experience", "Low Experience"],
             variable=self.filter_var,
             command=self._on_filter_change,
-            width=150
+            width=150,
         )
         self.filter_menu.pack(side="left", padx=10, pady=5)
 
@@ -1091,9 +1111,7 @@ class EmployeeList(ctk.CTkFrame):
         name_text = f"{exp_badge} {employee.name}"
 
         name_label = ctk.CTkLabel(
-            info_frame,
-            text=name_text,
-            font=ctk.CTkFont(weight="bold")
+            info_frame, text=name_text, font=ctk.CTkFont(weight="bold")
         )
         name_label.pack(side="left", padx=10)
 
@@ -1105,20 +1123,19 @@ class EmployeeList(ctk.CTkFrame):
             info_frame,
             text=status_text,
             text_color=status_color,
-            font=ctk.CTkFont(size=10)
+            font=ctk.CTkFont(size=10),
         )
         status_label.pack(side="right", padx=10)
 
         # Preferences summary
         prefs_text = f"Off shifts: {len(employee.preferences.off_shifts)}"
         if employee.preferences.preferred_shift_types != ["both"]:
-            prefs_text += f" | Pref: {', '.join(employee.preferences.preferred_shift_types)}"
+            prefs_text += (
+                f" | Pref: {', '.join(employee.preferences.preferred_shift_types)}"
+            )
 
         prefs_label = ctk.CTkLabel(
-            info_frame,
-            text=prefs_text,
-            font=ctk.CTkFont(size=10),
-            text_color="gray"
+            info_frame, text=prefs_text, font=ctk.CTkFont(size=10), text_color="gray"
         )
         prefs_label.pack(side="left", padx=20)
 
@@ -1131,7 +1148,7 @@ class EmployeeList(ctk.CTkFrame):
             text="Edit",
             width=60,
             height=25,
-            command=lambda: self._edit_employee(employee)
+            command=lambda: self._edit_employee(employee),
         )
         edit_button.pack(side="left", padx=5)
 
@@ -1142,7 +1159,7 @@ class EmployeeList(ctk.CTkFrame):
                 width=80,
                 height=25,
                 fg_color="orange",
-                command=lambda: self._toggle_employee_status(employee)
+                command=lambda: self._toggle_employee_status(employee),
             )
             deactivate_button.pack(side="left", padx=5)
         else:
@@ -1152,7 +1169,7 @@ class EmployeeList(ctk.CTkFrame):
                 width=80,
                 height=25,
                 fg_color="green",
-                command=lambda: self._toggle_employee_status(employee)
+                command=lambda: self._toggle_employee_status(employee),
             )
             activate_button.pack(side="left", padx=5)
 
@@ -1162,7 +1179,7 @@ class EmployeeList(ctk.CTkFrame):
             width=60,
             height=25,
             fg_color="red",
-            command=lambda: self._delete_employee(employee)
+            command=lambda: self._delete_employee(employee),
         )
         delete_button.pack(side="right", padx=5)
 
@@ -1193,22 +1210,34 @@ class EmployeeList(ctk.CTkFrame):
         if self.data_manager.update_employee(employee.id, is_active=new_status):
             logger.info(f"Employee {employee.name} was toggled.")
             self._load_employees()
-            messagebox.showinfo("Success", f"Employee {employee.name} {'activated' if new_status else 'deactivated'}")
+            messagebox.showinfo(
+                "Success",
+                f"Employee {employee.name} {'activated' if new_status else 'deactivated'}",
+            )
         else:
             logger.error(f"Failed to update status for employee {employee.name}")
             messagebox.showerror("Error", "Failed to update employee status")
 
     def _delete_employee(self, employee: Employee):
         """Handle employee deletion"""
-        if messagebox.askyesno("Confirm Delete", f"Are you sure you want to delete {employee.name}?"):
+        if messagebox.askyesno(
+            "Confirm Delete", f"Are you sure you want to delete {employee.name}?"
+        ):
             if self.data_manager.delete_employee(employee.id):
                 if self.data_manager.save_data():
-                    logger.info(f"Employee '{employee.name}' (ID: {employee.id}) was successfully deleted by the user.")
+                    logger.info(
+                        f"Employee '{employee.name}' (ID: {employee.id}) was successfully deleted by the user."
+                    )
                     self._load_employees()
                     messagebox.showinfo("Success", f"Employee {employee.name} deleted")
                 else:
-                    logger.error(f"Failed to save data after deleting employee {employee.name}")
-                    messagebox.showerror("Error", "Failed to save changes. Employee may not be properly deleted.")
+                    logger.error(
+                        f"Failed to save data after deleting employee {employee.name}"
+                    )
+                    messagebox.showerror(
+                        "Error",
+                        "Failed to save changes. Employee may not be properly deleted.",
+                    )
             else:
                 logger.error(f"Failed to delete employee {employee.name}")
                 messagebox.showerror("Error", "Failed to delete employee")
@@ -1260,13 +1289,15 @@ class EmployeeManagementWindow(ctk.CTkToplevel):
             self.list_panel,
             self.data_manager,
             on_employee_selected=self._on_employee_selected,
-            on_add_employee=self._on_add_employee
+            on_add_employee=self._on_add_employee,
         )
         self.employee_list.pack(fill="both", expand=True, padx=5, pady=5)
 
         # Right panel - Employee details/form
         self.details_panel = ctk.CTkFrame(self.main_frame)
-        self.details_panel.pack(side="right", fill="both", expand=True, padx=(5, 0), pady=5)
+        self.details_panel.pack(
+            side="right", fill="both", expand=True, padx=(5, 0), pady=5
+        )
 
         # Initially show welcome message
         self._show_welcome_message()
@@ -1289,13 +1320,13 @@ class EmployeeManagementWindow(ctk.CTkToplevel):
         ctk.CTkLabel(
             welcome_frame,
             text="👥 Employee Management",
-            font=ctk.CTkFont(size=24, weight="bold")
+            font=ctk.CTkFont(size=24, weight="bold"),
         ).pack(pady=(20, 10))
 
         ctk.CTkLabel(
             welcome_frame,
             text="Select an employee from the list to view/edit details,\nor click 'Add Employee' to create a new one.",
-            font=ctk.CTkFont(size=14)
+            font=ctk.CTkFont(size=14),
         ).pack(pady=20)
 
         # Quick stats
@@ -1304,7 +1335,9 @@ class EmployeeManagementWindow(ctk.CTkToplevel):
 
         employees = self.data_manager.get_employees(active_only=False)
         active_count = len([e for e in employees if e.is_active])
-        high_exp_count = len([e for e in employees if e.experience == "High" and e.is_active])
+        high_exp_count = len(
+            [e for e in employees if e.experience == "High" and e.is_active]
+        )
 
         stats_text = f"""
         Total Employees: {len(employees)}
@@ -1314,10 +1347,7 @@ class EmployeeManagementWindow(ctk.CTkToplevel):
         """
 
         ctk.CTkLabel(
-            stats_frame,
-            text=stats_text,
-            font=ctk.CTkFont(size=12),
-            justify="left"
+            stats_frame, text=stats_text, font=ctk.CTkFont(size=12), justify="left"
         ).pack(pady=10)
 
     def _on_employee_selected(self, employee: Employee):
@@ -1342,7 +1372,7 @@ class EmployeeManagementWindow(ctk.CTkToplevel):
             self.data_manager,
             employee,
             on_save=self._on_employee_saved,
-            on_cancel=self._on_form_cancelled
+            on_cancel=self._on_form_cancelled,
         )
         self.employee_form.pack(fill="both", expand=True, padx=5, pady=5)
 
@@ -1356,12 +1386,15 @@ class EmployeeManagementWindow(ctk.CTkToplevel):
                     name=employee_data["name"],
                     experience=employee_data["experience"],
                     is_active=employee_data["is_active"],
-                    preferences=employee_data["preferences"]
+                    preferences=employee_data["preferences"],
                 )
                 if success:
                     # Save data to persist changes
                     self.data_manager.save_data()
-                    messagebox.showinfo("Success", f"Employee {employee_data['name']} updated successfully")
+                    messagebox.showinfo(
+                        "Success",
+                        f"Employee {employee_data['name']} updated successfully",
+                    )
                 else:
                     logger.error("Failed to update employee")
                     messagebox.showerror("Error", "Failed to update employee")
@@ -1371,11 +1404,13 @@ class EmployeeManagementWindow(ctk.CTkToplevel):
                     name=employee_data["name"],
                     experience=employee_data["experience"],
                     is_active=employee_data["is_active"],
-                    preferences=employee_data["preferences"]
+                    preferences=employee_data["preferences"],
                 )
                 # Save data to persist changes
                 self.data_manager.save_data()
-                messagebox.showinfo("Success", f"Employee {new_employee.name} added successfully")
+                messagebox.showinfo(
+                    "Success", f"Employee {new_employee.name} added successfully"
+                )
 
             # Refresh list and show welcome
             self.employee_list.refresh()
@@ -1398,69 +1433,70 @@ class DashboardPanel(ctk.CTkFrame):
         self.data_manager = data_manager
 
         self._create_widgets()
-    
+
     def _create_widgets(self):
         # Title
         title_label = ctk.CTkLabel(
-            self,
-            text="Dashboard",
-            font=ctk.CTkFont(size=18, weight="bold")
+            self, text="Dashboard", font=ctk.CTkFont(size=18, weight="bold")
         )
         title_label.pack(pady=(10, 20))
-        
+
         # Statistics frame
         self.stats_frame = ctk.CTkScrollableFrame(self, height=200)
         self.stats_frame.pack(fill="both", expand=True, padx=10, pady=10)
-        
+
         # Experience filter
         filter_frame = ctk.CTkFrame(self)
         filter_frame.pack(fill="x", padx=10, pady=10)
-        
-        ctk.CTkLabel(filter_frame, text="Filter by Experience:").pack(side="left", padx=10)
-        
+
+        ctk.CTkLabel(filter_frame, text="Filter by Experience:").pack(
+            side="left", padx=10
+        )
+
         self.experience_filter = ctk.StringVar(value="All")
         filter_menu = ctk.CTkOptionMenu(
             filter_frame,
             values=["All", "High", "Low"],
             variable=self.experience_filter,
-            command=self._on_filter_change
+            command=self._on_filter_change,
         )
         filter_menu.pack(side="left", padx=10)
-    
+
     def _on_filter_change(self, value):
         """Handle experience filter change"""
         self.update_dashboard()
-    
+
     def update_dashboard(self, month_key: str = None):
         """Update dashboard with current statistics"""
         if not month_key:
             now = datetime.now()
             month_key = f"{now.year}-{now.month:02d}"
-        
+
         # Clear existing stats
         for widget in self.stats_frame.winfo_children():
             widget.destroy()
-        
+
         # Get statistics
         emp_stats = self.data_manager.calculate_employee_stats(month_key)
         team_stats = self.data_manager.get_team_stats(month_key)
-        
+
         # Filter by experience if needed
         filter_exp = self.experience_filter.get()
         if filter_exp != "All":
-            emp_stats = {name: stats for name, stats in emp_stats.items() 
-                        if stats["experience"] == filter_exp}
-        
+            emp_stats = {
+                name: stats
+                for name, stats in emp_stats.items()
+                if stats["experience"] == filter_exp
+            }
+
         # Team summary
         team_frame = ctk.CTkFrame(self.stats_frame)
         team_frame.pack(fill="x", pady=5)
-        
+
         ctk.CTkLabel(
-            team_frame,
-            text="Team Summary",
-            font=ctk.CTkFont(weight="bold")
+            team_frame, text="Team Summary", font=ctk.CTkFont(weight="bold")
         ).pack(pady=5)
-        
+
         summary_text = f"""
         Total Employees: {team_stats['total_employees']}
         High Experience: {team_stats['high_experience_count']}
@@ -1468,32 +1504,30 @@ class DashboardPanel(ctk.CTkFrame):
         Total Shifts: {team_stats['total_shifts_assigned']}
         Quota Violations: {team_stats['quota_violations']}
         """
-        
+
         ctk.CTkLabel(team_frame, text=summary_text, justify="left").pack(pady=5)
-        
+
         # Individual employee stats
         for emp_name, stats in emp_stats.items():
             emp_frame = ctk.CTkFrame(self.stats_frame)
             emp_frame.pack(fill="x", pady=2)
-            
+
             exp_badge = "★" if stats["experience"] == "High" else "○"
-            
+
             # Employee header
             header_text = f"{exp_badge} {emp_name} ({stats['experience']})"
             ctk.CTkLabel(
-                emp_frame,
-                text=header_text,
-                font=ctk.CTkFont(weight="bold")
+                emp_frame, text=header_text, font=ctk.CTkFont(weight="bold")
             ).pack(anchor="w", padx=10, pady=2)
-            
+
             # Stats
             stats_text = f"Shifts: {stats['total_shifts']} | Quota: {stats['quota']} | Deviation: {stats['quota_deviation']:+d}"
             ctk.CTkLabel(emp_frame, text=stats_text).pack(anchor="w", padx=20, pady=2)
-            
+
             # Color code based on quota deviation
-            if stats['quota_deviation'] > 0:
+            if stats["quota_deviation"] > 0:
                 emp_frame.configure(fg_color="lightcoral")
-            elif stats['quota_deviation'] < 0:
+            elif stats["quota_deviation"] < 0:
                 emp_frame.configure(fg_color="lightyellow")
             else:
                 emp_frame.configure(fg_color="lightgreen")
@@ -1501,65 +1535,65 @@ class DashboardPanel(ctk.CTkFrame):
 
 class MainWindow(ctk.CTk):
     """Main application window"""
-    
+
     # ADD arguments to accept the dependencies
     def __init__(self, data_manager: DataManager, scheduler: ShiftScheduler):
         super().__init__()
-        
+
         self.title("Shift Scheduling System")
         self.geometry("1400x900")
-        
+
         # REMOVE the lines that create new instances
         # self.data_manager = DataManager()
         # self.scheduler = ShiftScheduler(self.data_manager)
-        
+
         # ADD these lines to store the passed-in instances
         self.data_manager = data_manager
         self.scheduler = scheduler
-        
+
         self.current_year = datetime.now().year
         self.current_month = datetime.now().month
-        
+
         self._create_widgets()
         self._load_initial_data()
-    
+
     def _create_widgets(self):
         # Top control panel
         control_frame = ctk.CTkFrame(self, height=80)
         control_frame.pack(fill="x", padx=10, pady=10)
         control_frame.pack_propagate(False)
-        
+
         # Month/Year selectors
         ctk.CTkLabel(control_frame, text="Month:").pack(side="left", padx=10)
-        
+
         self.month_var = ctk.StringVar(value=str(self.current_month))
         month_menu = ctk.CTkOptionMenu(
             control_frame,
             values=[str(i) for i in range(1, 13)],
             variable=self.month_var,
             command=self._on_month_change,
-            width=80
+            width=80,
         )
         month_menu.pack(side="left", padx=5)
-        
+
         ctk.CTkLabel(control_frame, text="Year:").pack(side="left", padx=10)
-        
+
         self.year_var = ctk.StringVar(value=str(self.current_year))
         year_menu = ctk.CTkOptionMenu(
             control_frame,
             values=[str(i) for i in range(2024, 2030)],
             variable=self.year_var,
             command=self._on_year_change,
-            width=80
+            width=80,
         )
         year_menu.pack(side="left", padx=5)
-        
+
         # Action buttons
         ctk.CTkButton(
             control_frame,
             text="Generate Schedule",
             command=self._generate_schedule,
-            width=150
+            width=150,
         ).pack(side="left", padx=20)
 
         ctk.CTkButton(
@@ -1567,63 +1601,60 @@ class MainWindow(ctk.CTk):
             text="Clear Future Schedules",
             command=self._clear_future_schedules,
             width=170,
-            fg_color="orange"
+            fg_color="orange",
         ).pack(side="left", padx=10)
 
         ctk.CTkButton(
             control_frame,
             text="Manage Employees",
             command=self._manage_employees,
-            width=150
+            width=150,
         ).pack(side="left", padx=10)
-        
+
         ctk.CTkButton(
-            control_frame,
-            text="Export",
-            command=self._export_schedule,
-            width=100
+            control_frame, text="Export", command=self._export_schedule, width=100
         ).pack(side="left", padx=10)
-        
+
         # Main content area
         content_frame = ctk.CTkFrame(self)
         content_frame.pack(fill="both", expand=True, padx=10, pady=(0, 10))
-        
+
         # Calendar view (left side)
         self.calendar_view = CalendarView(content_frame, self.data_manager, self)
         self.calendar_view.pack(side="left", fill="both", expand=True, padx=(0, 5))
-        
+
         # Dashboard (right side)
         self.dashboard = DashboardPanel(content_frame, self.data_manager)
         self.dashboard.pack(side="right", fill="y", padx=(5, 0))
-        
+
         # Status bar
         self.status_var = ctk.StringVar(value="Ready")
         status_bar = ctk.CTkLabel(self, textvariable=self.status_var)
         status_bar.pack(side="bottom", fill="x", padx=10, pady=5)
-    
+
     def _load_initial_data(self):
         """Load initial data and update displays"""
         self.calendar_view.set_month(self.current_year, self.current_month)
         self.dashboard.update_dashboard()
         self.status_var.set("Data loaded successfully")
-    
+
     def _on_month_change(self, value):
         """Handle month selection change"""
         self.current_month = int(value)
         self.calendar_view.set_month(self.current_year, self.current_month)
         self.dashboard.update_dashboard(f"{self.current_year}-{self.current_month:02d}")
-    
+
     def _on_year_change(self, value):
         """Handle year selection change"""
         self.current_year = int(value)
         self.calendar_view.set_month(self.current_year, self.current_month)
         self.dashboard.update_dashboard(f"{self.current_year}-{self.current_month:02d}")
-    
+
     def _generate_schedule(self):
         """Generate schedule for current month with partial generation support"""
         # Check if partial generation is needed
         scope_info = self._get_partial_generation_scope()
-        if scope_info['is_partial']:
+        if scope_info["is_partial"]:
             # Directly proceed with partial generation
             self._proceed_with_generation(partial_generation=True)
         else:
@@ -1637,38 +1668,50 @@ class MainWindow(ctk.CTk):
         existing_schedule = self.data_manager.get_schedule(month_key) or {}
 
         # Check if this is the current month
-        is_current_month = (self.current_year == today.year and self.current_month == today.month)
+        is_current_month = (
+            self.current_year == today.year and self.current_month == today.month
+        )
 
         scope_info = {
-            'is_partial': False,
-            'current_date': today.strftime("%Y-%m-%d"),
-            'existing_assignments': 0,
-            'start_day': 1,
-            'end_day': calendar.monthrange(self.current_year, self.current_month)[1],
-            'includes_past': False
+            "is_partial": False,
+            "current_date": today.strftime("%Y-%m-%d"),
+            "existing_assignments": 0,
+            "start_day": 1,
+            "end_day": calendar.monthrange(self.current_year, self.current_month)[1],
+            "includes_past": False,
         }
 
         if is_current_month and existing_schedule:
             # Count existing assignments for past days
             for day in range(1, today.day + 1):
-                date_str = date(self.current_year, self.current_month, day).strftime("%Y-%m-%d")
+                date_str = date(self.current_year, self.current_month, day).strftime(
+                    "%Y-%m-%d"
+                )
                 day_schedule = existing_schedule.get(date_str, {})
-                if day_schedule.get("day_shift") is not None or day_schedule.get("night_shift") is not None:
-                    scope_info['existing_assignments'] += 1
-                    scope_info['is_partial'] = True
+                if (
+                    day_schedule.get("day_shift") is not None
+                    or day_schedule.get("night_shift") is not None
+                ):
+                    scope_info["existing_assignments"] += 1
+                    scope_info["is_partial"] = True
 
-            if scope_info['is_partial']:
-                scope_info['start_day'] = today.day + 1
+            if scope_info["is_partial"]:
+                scope_info["start_day"] = today.day + 1
                 # Check if there are unfilled past dates
                 for day in range(1, today.day + 1):
-                    date_str = date(self.current_year, self.current_month, day).strftime("%Y-%m-%d")
+                    date_str = date(
+                        self.current_year, self.current_month, day
+                    ).strftime("%Y-%m-%d")
                     day_schedule = existing_schedule.get(date_str, {})
-                    if day_schedule.get("day_shift") is None or day_schedule.get("night_shift") is None:
-                        scope_info['includes_past'] = True
+                    if (
+                        day_schedule.get("day_shift") is None
+                        or day_schedule.get("night_shift") is None
+                    ):
+                        scope_info["includes_past"] = True
                         break
 
         return scope_info
-    
+
     def _clear_future_schedules(self):
         """Clear all future schedule assignments for the current month"""
         month_key = f"{self.current_year}-{self.current_month:02d}"
@@ -1677,15 +1720,20 @@ class MainWindow(ctk.CTk):
         clear_info = self._get_clear_schedule_info(month_key)
 
         if clear_info["cleared_count"] == 0:
-            messagebox.showinfo("No Future Schedules", "There are no future schedule assignments to clear for the current month.")
+            messagebox.showinfo(
+                "No Future Schedules",
+                "There are no future schedule assignments to clear for the current month.",
+            )
             return
 
         # Show confirmation dialog
-        dialog = ClearScheduleDialog(self, month_key, clear_info, self._handle_clear_choice)
+        dialog = ClearScheduleDialog(
+            self, month_key, clear_info, self._handle_clear_choice
+        )
 
     def _get_clear_schedule_info(self, month_key: str) -> Dict:
         """Get information about future schedules that would be cleared"""
-        year, month = map(int, month_key.split('-'))
+        year, month = map(int, month_key.split("-"))
         today = date.today()
 
         schedule = self.data_manager.get_schedule(month_key)
@@ -1694,7 +1742,7 @@ class MainWindow(ctk.CTk):
             return {
                 "cleared_count": 0,
                 "affected_dates": [],
-                "message": "No schedule found for the specified month"
+                "message": "No schedule found for the specified month",
             }
 
         cleared_count = 0
@@ -1704,7 +1752,7 @@ class MainWindow(ctk.CTk):
         for date_str, day_schedule in schedule.items():
             # Robust date parsing to handle both zero-padded and non-zero-padded months
             try:
-                parts = date_str.split('-')
+                parts = date_str.split("-")
                 if len(parts) == 3:
                     year = int(parts[0])
                     month = int(parts[1])
@@ -1716,7 +1764,7 @@ class MainWindow(ctk.CTk):
             except (ValueError, IndexError) as e:
                 logger.error(f"Failed to parse date {date_str}: {e}")
                 continue
-        
+
             # Only count future dates
             if schedule_date > today:
                 day_shift = day_schedule.get("day_shift")
@@ -1730,13 +1778,13 @@ class MainWindow(ctk.CTk):
             return {
                 "cleared_count": 0,
                 "affected_dates": [],
-                "message": "No future schedule assignments to clear"
+                "message": "No future schedule assignments to clear",
             }
 
         return {
             "cleared_count": cleared_count,
             "affected_dates": affected_dates,
-            "message": f"Would clear {cleared_count} future schedule assignments"
+            "message": f"Would clear {cleared_count} future schedule assignments",
         }
 
     def _handle_clear_choice(self, choice: str):
@@ -1771,15 +1819,21 @@ class MainWindow(ctk.CTk):
         self.dashboard.update_dashboard(f"{self.current_year}-{self.current_month:02d}")
 
         if cleared_count > 0:
-            logger.info(f"Cleared {cleared_count} future schedule assignments for month {self.current_year}-{self.current_month:02d}")
+            logger.info(
+                f"Cleared {cleared_count} future schedule assignments for month {self.current_year}-{self.current_month:02d}"
+            )
             self.status_var.set(f"Future schedules cleared: {message}")
-            messagebox.showinfo("Schedules Cleared",
-                              f"✅ Future schedule assignments have been cleared successfully.\n\n"
-                              f"• Assignments cleared: {cleared_count}\n"
-                              f"• Calendar and dashboard updated")
+            messagebox.showinfo(
+                "Schedules Cleared",
+                f"✅ Future schedule assignments have been cleared successfully.\n\n"
+                f"• Assignments cleared: {cleared_count}\n"
+                f"• Calendar and dashboard updated",
+            )
         else:
             self.status_var.set("No future schedules to clear")
-            messagebox.showinfo("No Changes", "No future schedule assignments were found to clear.")
+            messagebox.showinfo(
+                "No Changes", "No future schedule assignments were found to clear."
+            )
 
     def _proceed_with_generation(self, partial_generation: bool):
         """Proceed with schedule generation"""
@@ -1794,7 +1848,7 @@ class MainWindow(ctk.CTk):
                     self.current_month,
                     allow_quota_violations=False,
                     emergency_mode=False,
-                    partial_generation=partial_generation
+                    partial_generation=partial_generation,
                 )
 
                 # Update displays
@@ -1805,7 +1859,7 @@ class MainWindow(ctk.CTk):
 
         # Run in background thread
         threading.Thread(target=generate, daemon=True).start()
-    
+
     def _update_after_generation(self, result: ScheduleResult):
         """Update UI after schedule generation"""
         self.calendar_view.update_schedule_display()
@@ -1818,7 +1872,9 @@ class MainWindow(ctk.CTk):
             feedback_message = f"✅ Schedule Generation Complete\n\n{result.message}"
 
             if result.violations:
-                feedback_message += f"\n\n⚠️ Constraint Violations Detected: {len(result.violations)}"
+                feedback_message += (
+                    f"\n\n⚠️ Constraint Violations Detected: {len(result.violations)}"
+                )
                 feedback_message += "\n\nViolations:"
                 for violation in result.violations[:5]:  # Show first 5 violations
                     feedback_message += f"\n• {violation}"
@@ -1845,11 +1901,11 @@ class MainWindow(ctk.CTk):
                 error_message += f"\n\nIssues encountered: {len(result.violations)} constraint violations"
 
             messagebox.showerror("Schedule Generation Failed", error_message)
-    
+
     def _manage_employees(self):
         """Open employee management window"""
         EmployeeManagementWindow(self, self.data_manager)
-    
+
     def _export_schedule(self):
         """Export current schedule to PDF, Excel, or CSV."""
         try:
@@ -1865,16 +1921,16 @@ class MainWindow(ctk.CTk):
                     ("PDF files", "*.pdf"),
                     ("Excel files", "*.xlsx"),
                     ("CSV files", "*.csv"),
-                    ("All files", "*.*")
+                    ("All files", "*.*"),
                 ],
-                title="Export Schedule"
+                title="Export Schedule",
             )
 
             if not output_path:
                 return  # User cancelled
 
             # Determine format from extension
-            file_extension = output_path.split('.')[-1].lower()
+            file_extension = output_path.split(".")[-1].lower()
             if file_extension == "xlsx":
                 format_type = "excel"
             elif file_extension == "csv":
@@ -1887,16 +1943,28 @@ class MainWindow(ctk.CTk):
                 self.current_month,
                 format_type,
                 output_path,
-                self.schedule_result if hasattr(self, 'schedule_result') and self.schedule_result else None
+                (
+                    self.schedule_result
+                    if hasattr(self, "schedule_result") and self.schedule_result
+                    else None
+                ),
             )
 
             if success:
-                messagebox.showinfo("Export Successful", f"Schedule exported successfully to:\n{output_path}")
+                messagebox.showinfo(
+                    "Export Successful",
+                    f"Schedule exported successfully to:\n{output_path}",
+                )
             else:
-                messagebox.showerror("Export Failed", "Failed to export schedule. Please check the file path and try again.")
+                messagebox.showerror(
+                    "Export Failed",
+                    "Failed to export schedule. Please check the file path and try again.",
+                )
 
         except Exception as e:
-            messagebox.showerror("Export Error", f"An error occurred during export:\n{str(e)}")
+            messagebox.showerror(
+                "Export Error", f"An error occurred during export:\n{str(e)}"
+            )
 
 
 def main():

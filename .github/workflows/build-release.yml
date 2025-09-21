@@ -49,18 +49,15 @@ jobs:
         id: get_version
         run: echo "VERSION=${{ github.ref_name }}" >> $env:GITHUB_OUTPUT
 
-      # Step 7: Create the ZIP files for the release
-      - name: Package release assets
+      # Step 7: Create the ZIP file for the release
+      - name: Package executable for release
         run: |
           Compress-Archive -Path dist/ShiftScheduler.exe -DestinationPath ShiftScheduler-${{ steps.get_version.outputs.VERSION }}-windows.zip
-          Compress-Archive -Path src/, assets/, pyproject.toml, README.md -DestinationPath source-code-${{ steps.get_version.outputs.VERSION }}.zip
           
-      # Step 8: Create a GitHub Release and upload the ZIP files
+      # Step 8: Create a GitHub Release and upload the executable ZIP
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            ShiftScheduler-${{ steps.get_version.outputs.VERSION }}-windows.zip
-            source-code-${{ steps.get_version.outputs.VERSION }}.zip
-          name: "Release ${{ steps.get_version.outputs.VERSION }}"
+          files: ShiftScheduler-${{ steps.get_version.outputs.VERSION }}-windows.zip
+          name: "Shift Scheduler Release ${{ steps.get_version.outputs.VERSION }}"
           body_path: CHANGELOG.md

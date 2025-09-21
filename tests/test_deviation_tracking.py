@@ -8,7 +8,12 @@ import json
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from shift_scheduler.data_manager import DataManager, DataValidationError, DataFileCorruptedError
+from shift_scheduler.data_manager import (
+    DataManager,
+    DataValidationError,
+    DataFileCorruptedError,
+)
+
 
 @pytest.fixture
 def data_manager():
@@ -16,12 +21,15 @@ def data_manager():
     Fixture for a clean, isolated DataManager instance for each test.
     It creates a temporary data file that is destroyed after the test runs.
     """
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as temp_file:
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".json", delete=False
+    ) as temp_file:
         temp_path = temp_file.name
         json.dump({}, temp_file)
     dm = DataManager(temp_path)
     yield dm
     os.unlink(temp_path)
+
 
 def check_deviation_flag(flag, expected_type, expected_severity, expected_units):
     assert flag is not None
@@ -29,30 +37,67 @@ def check_deviation_flag(flag, expected_type, expected_severity, expected_units)
     assert flag["severity"] == expected_severity
     assert f"{expected_units} units" in flag["description"]
 
+
 def test_deviation_calculation_and_flagging(data_manager):
     """
     Test the deviation tracking functionality with a controlled, predictable scenario.
     This test verifies that calculated deviations and their severity flags are correct.
     """
-    month_key = '2025-08'
+    month_key = "2025-08"
 
     emp_high = data_manager.add_employee("EmpHigh", "High")
     emp_low = data_manager.add_employee("EmpLow", "Low")
-    
+
     schedule = {
-        "2025-08-01": {"day_shift": {"employee_id": emp_high.id, "is_manual": False}, "night_shift": {"employee_id": emp_low.id, "is_manual": False}},
-        "2025-08-02": {"day_shift": {"employee_id": emp_high.id, "is_manual": False}, "night_shift": {"employee_id": emp_low.id, "is_manual": False}},
-        "2025-08-03": {"day_shift": None, "night_shift": {"employee_id": emp_high.id, "is_manual": False}},
+        "2025-08-01": {
+            "day_shift": {"employee_id": emp_high.id, "is_manual": False},
+            "night_shift": {"employee_id": emp_low.id, "is_manual": False},
+        },
+        "2025-08-02": {
+            "day_shift": {"employee_id": emp_high.id, "is_manual": False},
+            "night_shift": {"employee_id": emp_low.id, "is_manual": False},
+        },
+        "2025-08-03": {
+            "day_shift": None,
+            "night_shift": {"employee_id": emp_high.id, "is_manual": False},
+        },
         # EmpLow assignments (continued)
-        "2025-08-04": {"day_shift": {"employee_id": emp_low.id, "is_manual": False}, "night_shift": {"employee_id": emp_low.id, "is_manual": False}},
-        "2025-08-05": {"day_shift": {"employee_id": emp_low.id, "is_manual": False}, "night_shift": {"employee_id": emp_low.id, "is_manual": False}},
-        "2025-08-06": {"day_shift": {"employee_id": emp_low.id, "is_manual": False}, "night_shift": {"employee_id": emp_low.id, "is_manual": False}},
-        "2025-08-07": {"day_shift": {"employee_id": emp_low.id, "is_manual": False}, "night_shift": None},
-        "2025-08-08": {"day_shift": {"employee_id": emp_low.id, "is_manual": False}, "night_shift": None},
-        "2025-08-09": {"day_shift": {"employee_id": emp_low.id, "is_manual": False}, "night_shift": None},
-        "2025-08-10": {"day_shift": {"employee_id": emp_low.id, "is_manual": False}, "night_shift": None},
-        "2025-08-11": {"day_shift": {"employee_id": emp_low.id, "is_manual": False}, "night_shift": None},
-        "2025-08-12": {"day_shift": {"employee_id": emp_low.id, "is_manual": False}, "night_shift": None},
+        "2025-08-04": {
+            "day_shift": {"employee_id": emp_low.id, "is_manual": False},
+            "night_shift": {"employee_id": emp_low.id, "is_manual": False},
+        },
+        "2025-08-05": {
+            "day_shift": {"employee_id": emp_low.id, "is_manual": False},
+            "night_shift": {"employee_id": emp_low.id, "is_manual": False},
+        },
+        "2025-08-06": {
+            "day_shift": {"employee_id": emp_low.id, "is_manual": False},
+            "night_shift": {"employee_id": emp_low.id, "is_manual": False},
+        },
+        "2025-08-07": {
+            "day_shift": {"employee_id": emp_low.id, "is_manual": False},
+            "night_shift": None,
+        },
+        "2025-08-08": {
+            "day_shift": {"employee_id": emp_low.id, "is_manual": False},
+            "night_shift": None,
+        },
+        "2025-08-09": {
+            "day_shift": {"employee_id": emp_low.id, "is_manual": False},
+            "night_shift": None,
+        },
+        "2025-08-10": {
+            "day_shift": {"employee_id": emp_low.id, "is_manual": False},
+            "night_shift": None,
+        },
+        "2025-08-11": {
+            "day_shift": {"employee_id": emp_low.id, "is_manual": False},
+            "night_shift": None,
+        },
+        "2025-08-12": {
+            "day_shift": {"employee_id": emp_low.id, "is_manual": False},
+            "night_shift": None,
+        },
     }
     data_manager.save_schedule(month_key, schedule)
 
@@ -91,11 +136,12 @@ def test_deviation_calculation_and_flagging(data_manager):
     assert sorted(team_stats["under_quota_employees"]) == ["EmpHigh", "EmpLow"]
     assert team_stats["over_quota_employees"] == []
 
+
 def test_deviation_over_quota(data_manager):
     """
     Test for over-quota case.
     """
-    month_key = '2025-09'
+    month_key = "2025-09"
     emp = data_manager.add_employee("EmpOver", "High")
     # Assign 28 shifts (over 24 quota)
     schedule = {}
@@ -103,7 +149,7 @@ def test_deviation_over_quota(data_manager):
         key = f"2025-09-{day:02d}"
         schedule[key] = {
             "day_shift": {"employee_id": emp.id, "is_manual": False},
-            "night_shift": {"employee_id": emp.id, "is_manual": False}
+            "night_shift": {"employee_id": emp.id, "is_manual": False},
         }
     data_manager.save_schedule(month_key, schedule)
     stats = data_manager.calculate_employee_stats(month_key)
@@ -115,6 +161,7 @@ def test_deviation_over_quota(data_manager):
     assert flag["deviation_type"] == "over_quota"
     assert flag["severity"] == "high"
 
+
 def test_empty_schedule(data_manager):
     """
     Check no error on empty schedule/stat calculation.
@@ -122,6 +169,7 @@ def test_empty_schedule(data_manager):
     month_key = "2026-01"
     emp_stats = data_manager.calculate_employee_stats(month_key)
     assert emp_stats == {}
+
 
 def test_broken_data_raises(tmp_path):
     """

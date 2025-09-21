@@ -1,14 +1,14 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=61.0", "wheel", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "shift-scheduler"
-version = "1.0.0"
 description = "Employee Shift Scheduling System with Experience-Based Allocation"
 authors = [{name = "Shift Scheduler Team"}]
 readme = "README.md"
 requires-python = ">=3.10"
+dynamic = ["version"] 
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: End Users/Desktop",

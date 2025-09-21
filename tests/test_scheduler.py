@@ -19,10 +19,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 from shift_scheduler.data_manager import DataManager, Employee
 from shift_scheduler.scheduler_logic import ShiftScheduler, ConstraintViolation
 
+
 @pytest.fixture
 def data_manager():
     """Clean DataManager for each test - isolated temp file."""
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as temp:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as temp:
         temp_path = temp.name
         json.dump({}, temp)
     dm = DataManager(temp_path)
@@ -34,10 +35,12 @@ def data_manager():
     yield dm
     os.unlink(temp_path)
 
+
 @pytest.fixture
 def scheduler(data_manager):
     """Clean ShiftScheduler instance for each test."""
     return ShiftScheduler(data_manager)
+
 
 def test_employee_creation(data_manager):
     """Employee creation and info."""
@@ -45,6 +48,7 @@ def test_employee_creation(data_manager):
     assert len(employees) == 4
     alice = data_manager.get_employee_by_name("Alice")
     assert alice and alice.experience == "High" and alice.is_active
+
 
 def test_quota_management(data_manager):
     """Default quotas + custom overwrite."""
@@ -55,6 +59,7 @@ def test_quota_management(data_manager):
     data_manager.set_quota("Alice", 31, 26)
     assert data_manager.get_quotas_for_month(31)["Alice"] == 26
 
+
 def test_absence_tracking(data_manager):
     """Test adding/removing absences."""
     alice = data_manager.get_employee_by_name("Alice")
@@ -63,32 +68,47 @@ def test_absence_tracking(data_manager):
     data_manager.remove_absence(alice.id, "2024-01-15")
     assert not data_manager.is_employee_absent(alice.id, "2024-01-15")
 
-@pytest.mark.parametrize("shift_type, schedule, expect_violation", [
-    ("day_shift",
-     {"2024-01-15": {"day_shift": 1, "night_shift": None}},
-     None),
-    ("night_shift",
-     {"2024-01-15": {"day_shift": 1, "night_shift": None}},
-     ConstraintViolation.SAME_DAY_CONFLICT),
-    ("day_shift",
-     {"2024-01-14": {"day_shift": None, "night_shift": 1}, "2024-01-15": {"day_shift": None, "night_shift": None}},
-     ConstraintViolation.POST_NIGHT_CONFLICT),
-])
+
+@pytest.mark.parametrize(
+    "shift_type, schedule, expect_violation",
+    [
+        ("day_shift", {"2024-01-15": {"day_shift": 1, "night_shift": None}}, None),
+        (
+            "night_shift",
+            {"2024-01-15": {"day_shift": 1, "night_shift": None}},
+            ConstraintViolation.SAME_DAY_CONFLICT,
+        ),
+        (
+            "day_shift",
+            {
+                "2024-01-14": {"day_shift": None, "night_shift": 1},
+                "2024-01-15": {"day_shift": None, "night_shift": None},
+            },
+            ConstraintViolation.POST_NIGHT_CONFLICT,
+        ),
+    ],
+)
 def test_constraint_validation(scheduler, shift_type, schedule, expect_violation):
     """Parameterized check for scheduling rules: same day/night conflict, post night rest."""
     alice = scheduler.data_manager.get_employee_by_name("Alice")
-    violations = scheduler.validate_manual_assignment(alice.id, "2024-01-15", shift_type, schedule)
+    violations = scheduler.validate_manual_assignment(
+        alice.id, "2024-01-15", shift_type, schedule
+    )
     if expect_violation:
         assert expect_violation in violations
     else:
         assert not violations
 
+
 def test_absence_constraint_validation(scheduler):
     """Scheduling should flag violation if employee absent."""
     alice = scheduler.data_manager.get_employee_by_name("Alice")
     scheduler.data_manager.add_absence(alice.id, "2024-01-15")
-    violations = scheduler.validate_manual_assignment(alice.id, "2024-01-15", "day_shift", {})
+    violations = scheduler.validate_manual_assignment(
+        alice.id, "2024-01-15", "day_shift", {}
+    )
     assert ConstraintViolation.ABSENCE in violations
+
 
 def test_schedule_generation_and_statistics(scheduler):
     """Test schedule generation for small month and check stats."""
@@ -98,17 +118,21 @@ def test_schedule_generation_and_statistics(scheduler):
     assert len(result.schedule) == 29
     assert hasattr(result, "statistics")
 
+
 def test_experience_based_allocation_with_emergency(scheduler):
     """High experience employees get more shifts during emergencies."""
-    result = scheduler.generate_schedule(2024, 1, allow_quota_violations=True, emergency_mode=True)
+    result = scheduler.generate_schedule(
+        2024, 1, allow_quota_violations=True, emergency_mode=True
+    )
     assert result.success
     stats = result.statistics
     highs = [data for data in stats.values() if data["experience"] == "High"]
     lows = [data for data in stats.values() if data["experience"] == "Low"]
     if highs and lows:
-        avg_high = sum(p["total_shifts"] for p in highs)/len(highs)
-        avg_low = sum(p["total_shifts"] for p in lows)/len(lows)
+        avg_high = sum(p["total_shifts"] for p in highs) / len(highs)
+        avg_low = sum(p["total_shifts"] for p in lows) / len(lows)
         assert avg_high >= avg_low
+
 
 def test_schedule_statistics_manual(scheduler):
     """Check stats calc utility."""
@@ -123,9 +147,10 @@ def test_schedule_statistics_manual(scheduler):
     assert stats["night_shifts"] == 2
     assert stats["unassigned_shifts"] == 1
 
+
 def test_scheduler_empty_inputs():
     """Edge case: handle with no employees safely (pipeline edge-case)."""
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as temp:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as temp:
         temp_path = temp.name
         json.dump({}, temp)
     dm = DataManager(temp_path)
@@ -133,6 +158,7 @@ def test_scheduler_empty_inputs():
     result = scheduler.generate_schedule(2024, 1, allow_quota_violations=True)
     assert not result.success or not result.schedule  # Should not crash
     os.unlink(temp_path)
+
 
 def test_schedule_generation_fails_gracefully_when_infeasible(scheduler, data_manager):
     """
@@ -142,10 +168,10 @@ def test_schedule_generation_fails_gracefully_when_infeasible(scheduler, data_ma
     """
     # Get all 4 employees
     employees = data_manager.get_employees()
-    
+
     # Make a schedule impossible by having most employees absent
     for i, emp in enumerate(employees):
-        if i < 3: # Make the first 3 employees absent for the whole month
+        if i < 3:  # Make the first 3 employees absent for the whole month
             for day in range(1, 32):
                 date_str = f"2025-01-{day:02d}"
                 data_manager.add_absence(emp.id, date_str)
